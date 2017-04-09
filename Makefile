@@ -1,6 +1,6 @@
 FLAGS = -Wall -std=c++14 -g -O0 -pedantic-errors
 
-all: true false env
+all: true false env pwd
 
 true: true.o
 	g++ $(FLAGS) -o true true.o
@@ -20,5 +20,11 @@ env: env.o
 env.o: env.cpp
 	g++ $(FLAGS) -c env.cpp
 
+pwd: pwd.o
+	g++ $(FLAGS) -o pwd pwd.o
+
+pwd.o: pwd.cpp
+	g++ $(FLAGS) -c pwd.cpp
+
 clean:
-	rm -f true false env *.o *~ /#*
+	rm -f true false env pwd *.o *~ /#*

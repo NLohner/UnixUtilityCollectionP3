@@ -1,6 +1,6 @@
 FLAGS = -Wall -std=c++14 -g -O0 -pedantic-errors
 
-all: true false env pwd tail wc
+all: true false env pwd tail wc mkdir
 
 true: true.o
 	g++ $(FLAGS) -o true true.o
@@ -38,5 +38,11 @@ wc: wc.o
 wc.o: wc.cpp
 	g++ $(FLAGS) -c wc.cpp
 
+mkdir: mkdir.o
+	g++ $(FLAGS) -o mkdir mkdir.o
+
+mkdir.o: mkdir.cpp
+	g++ $(FLAGS) -c mkdir.cpp
+
 clean:
-	rm -f true false env pwd tail wc *.o *~ /#*
+	rm -f true false env pwd tail wc mkdir *.o *~ /#*

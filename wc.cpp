@@ -1,15 +1,15 @@
-#include <cstdlib>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string>
+#include <unistd.h>
 #include <string.h>
 #include <wctype.h>
+#include <cstdlib>
+#include <fcntl.h>
+#include <stdio.h>
 #include <clocale>
 #include <cstring>
 #include <cwchar>
+#include <string>
 
 //prototypes
 int  writeToBuffer(char*);

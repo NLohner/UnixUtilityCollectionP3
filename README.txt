@@ -58,4 +58,3 @@ and if argv[i] equaled "-r", then set "bool r" to true (as an example). Then,
 the "if" statements that had (r) as a condition would execute, doing whatever 
 the -r option was meant to do. 
  
- 

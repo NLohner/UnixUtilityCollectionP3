@@ -1,10 +1,10 @@
-#include <cstdlib>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <cstdlib>
 
 //prototypes
 int writeToBuffer(char*,int);
@@ -73,8 +73,8 @@ int main(int argc, char ** argv){
   int off = 0;
 
 
-  /*                               THIS CODE IS PRETTY NASTY, TONS OF IF-ELSE STATEMENTS AHEAD                               */
-
+  /*                                    THIS CODE IS PRETTY NASTY, TONS OF IF-ELSE STATEMENTS AHEAD                                    */
+  /*I was like already half way done with this monstrosity when I realised like four ways to write this that are much cleaner, sorry :(*/
 
   //if we have no parameters, we're reading from standard input
   if(argc == 1){
@@ -278,6 +278,42 @@ int main(int argc, char ** argv){
 
     }//else if
 
+    //same case as above, just with the positions of the file and number swapped
+    else if((((currentoptions & O_N) == O_N) || ((currentoptions & O_C) == O_C)) && isNum(argv[3])){
+
+      //we can't read directories
+      if(isDir(argv[2])) return EXIT_FAILURE;
+
+      stdin = false;
+
+      int len = 0;
+
+      //write the file's contents to the buffer
+      if((len = writeToBuffer(argv[2], O_NOOPTS)) < 0) return EXIT_FAILURE;
+
+      //if we have -c, we need the offset to be in bytes rather than lines
+      if((currentoptions & O_C) == O_C){
+
+        int offset = atoi(argv[3]);
+
+        //the largest the offset can be is the size of the file,
+        //so if the offset is bigger, set it to the length of the file
+        if(offset > len) offset = len;
+
+        //write to the screen
+        if(writeToSTDOUT(offset, len) < 0) return EXIT_FAILURE;
+
+      }//if
+
+      //if we have -n, the offset is in lines
+      else{
+
+        if(writeToSTDOUT(linesToChar(atoi(argv[3]), len), len) < 0) return EXIT_FAILURE;
+
+      }//else
+
+    }//else if
+
     //if we have -n, -f, and a number, we're reading from standard input with offset argv[3]
     else if(((currentoptions & O_N) == O_N) && ((currentoptions & O_F) == O_F) && isNum(argv[3])){
 
@@ -371,6 +407,60 @@ int main(int argc, char ** argv){
 	int offset = atoi(argv[3]);
 
 	if(offset > len) offset = len;
+
+        if(writeToSTDOUT(offset, len) < 0) return EXIT_FAILURE;
+
+      }//if
+
+      else{
+
+        if(writeToSTDOUT(linesToChar(atoi(argv[3]), len), len) < 0) return EXIT_FAILURE;
+
+      }//else
+
+    }//else if
+
+    //same case as above, just with the postions of the file and number swapped
+    else if(isNum(argv[4]) && (((currentoptions & O_C) == O_C) || ((currentoptions & O_N) == O_N)) && ((currentoptions & O_F) == O_F)){
+
+      //we can't read directories
+      if(isDir(argv[3])) return EXIT_FAILURE;
+
+      stdin = false;
+
+      int len = 0;
+
+      //write the file to the buffer
+      if((len = writeToBuffer(argv[3], O_NOOPTS)) < 0) return EXIT_FAILURE;
+
+      //if we have -c, handle the offset as bytes
+      if((currentoptions & O_C) == O_C){
+
+        int offset = atoi(argv[4]);
+
+        if(offset > len) offset = len;
+
+        if(writeToSTDOUT(offset, len) < 0) return EXIT_FAILURE;
+
+      }//if
+
+      //if we have -n, handle the offset as lines
+      else{
+
+        if(writeToSTDOUT(linesToChar(atoi(argv[4]), len), len) < 0) return EXIT_FAILURE;
+
+      }//else
+
+      //because we have -f, we now need to loop our read to catch any appends to the file
+      if((len = writeToBuffer(argv[3], O_F)) < 0) return EXIT_FAILURE;
+
+      //again, I'm pretty sure these never get called because
+      //we use C-c to get out of the above loop
+      if((currentoptions & O_C) == O_C){
+
+        int offset = atoi(argv[4]);
+
+        if(offset > len) offset = len;
 
         if(writeToSTDOUT(offset, len) < 0) return EXIT_FAILURE;
 
